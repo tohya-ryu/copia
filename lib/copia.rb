@@ -15,11 +15,18 @@ class Copia
     @@accounts = []
     @@pref_path = File.join(Dir.home, PREF_DIR)
     @accounts_path = File.join(@@pref_path, ACC_FILE)
+    @optparse = parse_options
   end
 
   def main
     setup
     load_accounts
+    case ARGV[0]
+    when "transfer", "t", "mv"
+    when "new-account", "na"
+    else
+      puts @optparse
+    end
   end
 
   def accounts
@@ -27,6 +34,26 @@ class Copia
   end
 
   private
+
+  def parse_options
+    optparse = OptionParser.new do |opts|
+      opts.banner = "Usage: copia <cmd> [options]\n"+
+        "Commands: transfer (t,mv), new-account (na)"
+      opts.on_tail("-h", "--help", "Display this screen") do
+        puts opts
+        exit
+      end
+    end
+    begin
+      optparse.parse!
+    rescue OptionParser::InvalidOption => e
+      puts e
+      puts ""
+      puts optparse
+      exit
+    end
+    optparse
+  end
 
   # sets up required directories and files if not existing
   def setup
@@ -45,26 +72,8 @@ class Copia
     file = File.new @accounts_path
     doc = REXML::Document.new file
     file.close
-    @@accounts = fetch_accounts doc.root.elements['accounts']
+    @@accounts = Account.fetch doc.root.elements['accounts']
   end
-
-  # accepts raw data from rexml for a set of accounts
-  # to recursively built data tree
-  def fetch_accounts(raw)
-    ar = []
-    raw.each_element do |acc|
-      account = Account.new(
-        acc.elements['id'].text,
-        acc.elements['key'].text,
-        acc.elements['name'].text)
-      if acc.elements['children'].count > 0
-        account.children = fetch_accounts acc.elements['children']
-      end
-      ar.push account
-    end
-    ar
-  end
-
 
 end
 
