@@ -14,7 +14,7 @@ class Copia
   def initialize
     @@accounts = []
     @@pref_path = File.join(Dir.home, PREF_DIR)
-    @accounts_path = File.join(@@pref_path, ACC_FILE)
+    @@accounts_path = File.join(@@pref_path, ACC_FILE)
   end
 
   def main
@@ -29,8 +29,19 @@ class Copia
     end
   end
 
-  def accounts
+  def self.accounts
     @@accounts
+  end
+
+  def self.accounts_path
+    @@accounts_path
+  end
+
+  def self.get_doc(filename)
+    file = File.new filename
+    doc = REXML::Document.new file
+    file.close
+    doc
   end
 
   private
@@ -58,9 +69,9 @@ class Copia
   # sets up required directories and files if not existing
   def setup
     FileUtils.mkpath @@pref_path unless Dir.exists? @@pref_path
-    unless File.exists? @accounts_path
+    unless File.exists? @@accounts_path
       path = File.join(__dir__, '../stub', ACC_FILE)
-      res = system "cp #{path} #{@accounts_path}"
+      res = system "cp #{path} #{@@accounts_path}"
       unless res
         puts res
         exit
@@ -69,9 +80,7 @@ class Copia
   end
   
   def load_accounts
-    file = File.new @accounts_path
-    doc = REXML::Document.new file
-    file.close
+    doc = Copia.get_doc @@accounts_path
     @@accounts = Account.load doc.root.elements['accounts']
   end
 

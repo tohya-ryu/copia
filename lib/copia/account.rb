@@ -1,5 +1,6 @@
 class Account
-  attr_reader   :id, :key, :name, :children
+  attr_accessor :children
+  attr_reader   :id, :key, :name
 
   @@id_head = 0
 
@@ -10,7 +11,8 @@ class Account
     @children = nil
   end
 
-  def create(id, key, name)
+  def self.id_head
+    @@id_head
   end
 
   # accepts raw data from rexml for a set of accounts
