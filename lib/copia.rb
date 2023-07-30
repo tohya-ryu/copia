@@ -15,7 +15,6 @@ class Copia
     @@accounts = []
     @@pref_path = File.join(Dir.home, PREF_DIR)
     @accounts_path = File.join(@@pref_path, ACC_FILE)
-    @optparse = parse_options
   end
 
   def main
@@ -24,8 +23,9 @@ class Copia
     case ARGV[0]
     when "transfer", "t", "mv"
     when "new-account", "na"
+      CommandNewAccount.new.run
     else
-      puts @optparse
+      puts parse_options
     end
   end
 
@@ -80,3 +80,4 @@ end
 require 'copia/account.rb'
 require 'copia/entry.rb'
 require 'copia/transaction.rb'
+require 'copia/command_new_account.rb'

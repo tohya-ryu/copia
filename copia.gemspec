@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
     "lib/copia/account.rb",
     "lib/copia/entry.rb",
     "lib/copia/transaction.rb",
+    "lib/copia/command_new_account.rb",
     "stub/accounts.xml"
   ]
   s.homepage = 'https://www.tohya.net/projects/misc/copia.html'
