@@ -42,11 +42,27 @@ class Copia
   end
   
   def load_accounts
-    @@accounts = fetch_accounts
+    file = File.new @accounts_path
+    doc = REXML::Document.new file
+    file.close
+    @@accounts = fetch_accounts doc.root.elements['accounts']
   end
 
-  def fetch_accounts
-    0
+  # accepts raw data from rexml for a set of accounts
+  # to recursively built data tree
+  def fetch_accounts(raw)
+    ar = []
+    raw.each_element do |acc|
+      account = Account.new(
+        acc.elements['id'].text,
+        acc.elements['key'].text,
+        acc.elements['name'].text)
+      if acc.elements['children'].count > 0
+        account.children = fetch_accounts acc.elements['children']
+      end
+      ar.push account
+    end
+    ar
   end
 
 
