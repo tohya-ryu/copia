@@ -1,5 +1,6 @@
 class Account
-  attr_reader :id, :key, :name, :children
+  attr_accessor :children
+  attr_reader   :id, :key, :name
 
   def initialize(id, key, name)
     @id       = id
