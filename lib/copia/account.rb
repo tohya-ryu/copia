@@ -15,7 +15,7 @@ class Account
 
   # accepts raw data from rexml for a set of accounts
   # to recursively built data tree
-  def self.fetch(raw)
+  def self.load(raw)
     ar = []
     raw.each_element do |acc|
       account = Account.new(
@@ -24,7 +24,7 @@ class Account
         acc.elements['name'].text)
       @@id_head = account.id if account.id > @@id_head
       if acc.elements['children'].count > 0
-        account.children = fetch acc.elements['children']
+        account.children = Account.load acc.elements['children']
       end
       ar.push account
     end

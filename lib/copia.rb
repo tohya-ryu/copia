@@ -72,7 +72,7 @@ class Copia
     file = File.new @accounts_path
     doc = REXML::Document.new file
     file.close
-    @@accounts = Account.fetch doc.root.elements['accounts']
+    @@accounts = Account.load doc.root.elements['accounts']
   end
 
 end
