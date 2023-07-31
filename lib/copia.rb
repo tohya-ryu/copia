@@ -51,7 +51,7 @@ class Copia
   def parse_options
     optparse = OptionParser.new do |opts|
       opts.banner = "Usage: copia <cmd> [options]\n"+
-        "Commands: transfer (t,mv), new-account (na)"
+        "Commands: transfer (t,mv), new-account (na), list-accounts (la)"
       opts.on_tail("-h", "--help", "Display this screen") do
         puts opts
         exit

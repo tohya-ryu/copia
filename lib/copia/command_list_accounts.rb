@@ -5,19 +5,21 @@ class CommandListAccounts
   end
 
   def run
-    print_accounts(Copia.accounts, 0)
+    puts print_accounts(Copia.accounts, 0, '')
   end
 
   private
 
-  def print_accounts(accounts, indent)
+  def print_accounts(accounts, indent, str)
+    out = str
     accounts.each do |account|
       str = ""
       (indent*4).times { |n| str << " " }
       str << account.to_s
-      puts str
-      print_accounts(account.children, indent+1) if account.children
+      out << str << "\n"
+      out = print_accounts(account.children, indent+1, out) if account.children
     end
+    out
   end
 
   def parse_options
