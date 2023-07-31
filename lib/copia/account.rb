@@ -11,6 +11,10 @@ class Account
     @children = nil
   end
 
+  def to_s
+    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}]"
+  end
+
   def self.id_head
     @@id_head
   end

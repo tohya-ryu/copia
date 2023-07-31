@@ -7,9 +7,9 @@ require 'time'
 
 class Copia
 
-  VERSION  = "1.0.0"
-  PREF_DIR = ".local/share/copia"
-  ACC_FILE = "accounts.xml"
+  VERSION  = '1.0.0'
+  PREF_DIR = '.local/share/copia'
+  ACC_FILE = 'accounts.xml'
 
   def initialize
     @@accounts = []
@@ -21,9 +21,11 @@ class Copia
     setup
     load_accounts
     case ARGV[0]
-    when "transfer", "t", "mv"
-    when "new-account", "na"
+    when 'transfer', 't', 'mv'
+    when 'new-account', 'na'
       CommandNewAccount.new.run
+    when 'list-accounts', 'la'
+      CommandListAccounts.new.run
     else
       puts parse_options
     end
@@ -90,3 +92,4 @@ require 'copia/account.rb'
 require 'copia/entry.rb'
 require 'copia/transaction.rb'
 require 'copia/command_new_account.rb'
+require 'copia/command_list_accounts.rb'
