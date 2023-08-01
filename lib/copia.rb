@@ -39,6 +39,10 @@ class Copia
     @@accounts
   end
 
+  def self.currencies
+    @@currencies
+  end
+
   def self.accounts_path
     @@accounts_path
   end
