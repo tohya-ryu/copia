@@ -14,6 +14,7 @@ class Copia
 
   def initialize
     @@accounts        = []
+    @@currencies      = []
     @@pref_path       = File.join(Dir.home, PREF_DIR)
     @@accounts_path   = File.join(@@pref_path, ACC_FILE)
     @@currencies_path = File.join(@@pref_path, CURR_FILE)
@@ -22,6 +23,7 @@ class Copia
   def main
     setup
     load_accounts
+    load_currencies
     case ARGV[0]
     when 'transfer', 't', 'mv'
     when 'new-account', 'na'
@@ -95,6 +97,10 @@ class Copia
     doc = Copia.get_doc @@accounts_path
     @@accounts = Account.load doc.root.elements['accounts']
   end
+
+  def load_currencies
+    doc = Copia.get_doc @@currencies_path
+    @@currencies = Currency.load doc.root.elements['currencies']
 
 end
 
