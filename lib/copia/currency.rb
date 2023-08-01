@@ -1,10 +1,11 @@
 class Currency
 
-  def initialize(id, name, key, symbol, pos)
-    @id     = id
-    @name   = name
-    @symbol = symbol
-    @pos    = pos
+  def initialize(id, name, code, sym, pos)
+    @id       = id
+    @name     = name
+    @code     = code
+    @symbol   = sym
+    @position = pos
   end
 
 end
