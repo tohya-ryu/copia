@@ -10,11 +10,13 @@ class Copia
   VERSION  = '1.0.0'
   PREF_DIR = '.local/share/copia'
   ACC_FILE = 'accounts.xml'
+  CURR_FILE = 'currencies.xml'
 
   def initialize
-    @@accounts = []
-    @@pref_path = File.join(Dir.home, PREF_DIR)
-    @@accounts_path = File.join(@@pref_path, ACC_FILE)
+    @@accounts        = []
+    @@pref_path       = File.join(Dir.home, PREF_DIR)
+    @@accounts_path   = File.join(@@pref_path, ACC_FILE)
+    @@currencies_path = File.join(@@pref_path, CURR_FILE)
   end
 
   def main
@@ -74,6 +76,14 @@ class Copia
     unless File.exists? @@accounts_path
       path = File.join(__dir__, '../stub', ACC_FILE)
       res = system "cp #{path} #{@@accounts_path}"
+      unless res
+        puts res
+        exit
+      end
+    end
+    unless File.exists? @@currencies_path
+      path = File.join(__dir__, '../stub', CURR_FILE)
+      res = system "cp #{path} #{@@currencies_path}"
       unless res
         puts res
         exit
