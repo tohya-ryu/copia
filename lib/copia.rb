@@ -89,6 +89,7 @@ class Copia
 end
 
 require 'copia/account.rb'
+require 'copia/currency.rb'
 require 'copia/entry.rb'
 require 'copia/transaction.rb'
 require 'copia/command_new_account.rb'

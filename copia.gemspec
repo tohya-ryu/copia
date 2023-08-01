@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.files = [
     "lib/copia.rb",
     "lib/copia/account.rb",
+    "lib/copia/currency.rb",
     "lib/copia/entry.rb",
     "lib/copia/transaction.rb",
     "lib/copia/command_new_account.rb",
