@@ -1,13 +1,14 @@
 class Account
-  attr_accessor :children
+  attr_accessor :children, :balance
   attr_reader   :id, :key, :name
 
   @@id_head = 0
 
-  def initialize(id, key, name)
+  def initialize(id, key, name, balance)
     @id       = id.to_i
     @key      = key
     @name     = name
+    @balance  = 0.00
     @children = nil
   end
 
@@ -27,7 +28,8 @@ class Account
       account = Account.new(
         acc.elements['id'].text,
         acc.elements['key'].text,
-        acc.elements['name'].text)
+        acc.elements['name'].text,
+        acc.elements['balance'].text)
       @@id_head = account.id if account.id > @@id_head
       if acc.elements['children'].count > 0
         account.children = Account.load acc.elements['children']
