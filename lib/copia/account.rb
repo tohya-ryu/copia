@@ -1,14 +1,15 @@
 class Account
   attr_accessor :children, :balance
-  attr_reader   :id, :key, :name
+  attr_reader   :id, :key, :name, :currency
 
   @@id_head = 0
 
-  def initialize(id, key, name, balance)
+  def initialize(id, key, name, balance, currency)
     @id       = id.to_i
     @key      = key
     @name     = name
-    @balance  = 0.00
+    @balance  = balance
+    @currency = Copia.currencies[currency.to_i]
     @children = nil
   end
 
@@ -29,7 +30,8 @@ class Account
         acc.elements['id'].text,
         acc.elements['key'].text,
         acc.elements['name'].text,
-        acc.elements['balance'].text)
+        acc.elements['balance'].text,
+        acc.elements['currency'].text)
       @@id_head = account.id if account.id > @@id_head
       if acc.elements['children'].count > 0
         account.children = Account.load acc.elements['children']
