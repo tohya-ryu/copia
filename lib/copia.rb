@@ -30,6 +30,8 @@ class Copia
       CommandNewAccount.new.run
     when 'list-accounts', 'la'
       CommandListAccounts.new.run
+    when 'set-currency'
+      CommandSetCurrency.new.run
     else
       puts parse_options
     end
@@ -59,7 +61,8 @@ class Copia
   def parse_options
     optparse = OptionParser.new do |opts|
       opts.banner = "Usage: copia <cmd> [options]\n"+
-        "Commands: transfer (t,mv), new-account (na), list-accounts (la)"
+        "Commands: transfer (t,mv), new-account (na), list-accounts (la), "+
+        "set-currency"
       opts.on_tail("-h", "--help", "Display this screen") do
         puts opts
         exit
@@ -115,3 +118,4 @@ require 'copia/entry.rb'
 require 'copia/transaction.rb'
 require 'copia/command_new_account.rb'
 require 'copia/command_list_accounts.rb'
+require 'copia/command_set_currency.rb'
