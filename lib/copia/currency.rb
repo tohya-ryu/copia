@@ -18,7 +18,7 @@ class Currency
         curr.elements['code'].text,
         curr.elements['symbol'].text,
         curr.elements['position'].text)
-      ar[currency.id] = currency
+      ar[currency.id.to_i] = currency
     end
     ar
   end

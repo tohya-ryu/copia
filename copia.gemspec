@@ -15,7 +15,8 @@ Gem::Specification.new do |s|
     "lib/copia/transaction.rb",
     "lib/copia/command_new_account.rb",
     "lib/copia/command_list_accounts.rb",
-    "stub/accounts.xml"
+    "stub/accounts.xml",
+    "stub/currencies.xml"
   ]
   s.homepage = 'https://www.tohya.net/projects/misc/copia.html'
   s.license = 'GPL-3.0'

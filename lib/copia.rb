@@ -101,6 +101,7 @@ class Copia
   def load_currencies
     doc = Copia.get_doc @@currencies_path
     @@currencies = Currency.load doc.root.elements['currencies']
+  end
 
 end
 
