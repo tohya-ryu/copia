@@ -49,6 +49,10 @@ class Copia
     @@accounts_path
   end
 
+  def self.currencies_path
+    @@currencies_path
+  end
+
   def self.get_doc(filename)
     file = File.new filename
     doc = REXML::Document.new file

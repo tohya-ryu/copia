@@ -5,7 +5,10 @@ class CommandNewAccount
   end
 
   def run
-    puts @optparse if ARGV.count != 3
+    if ARGV.count != 3
+      @optparse
+      exit
+    end
     @name = ARGV[1]
     @key  = ARGV[2]
     path = ARGV[2].split ':'

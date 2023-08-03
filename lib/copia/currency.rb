@@ -23,4 +23,34 @@ class Currency
     ar
   end
 
+  def self.find(input)
+    if /[0-9]+/.match? input
+      if Copia.currencies.at input.to_i
+        return Copia.currencies[input.to_i]
+      else
+        return false
+      end
+    else
+      ar = input.split ':'
+      if ar.count == 2
+        Copia.currencies.each do |currency|
+          next if currency.nil?
+          if currency.code.downcase == ar[0].downcase and
+              currency.position.downcase == ar[1].downcase
+            return currency
+          else
+            return false
+          end
+
+        end
+      else
+        Copia.currencies.each do |currency|
+          next if currency.nil?
+          return currency if currency.code.downcase == ar[0].downcase
+        end
+        return false
+      end
+    end
+  end
+
 end

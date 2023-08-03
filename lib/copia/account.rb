@@ -1,6 +1,6 @@
 class Account
-  attr_accessor :children, :balance
-  attr_reader   :id, :key, :name, :currency
+  attr_accessor :children, :balance, :currency
+  attr_reader   :id, :key, :name
 
   @@id_head = 0
 
@@ -9,7 +9,7 @@ class Account
     @key      = key
     @name     = name
     @balance  = balance
-    @currency = Copia.currencies[currency.to_i]
+    @currency = Currency.find(currency)
     @children = nil
   end
 
