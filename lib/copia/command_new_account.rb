@@ -1,7 +1,9 @@
 class CommandNewAccount
 
   def initialize
+    @options = {}
     @optparse = parse_options
+    @options[:description] = '' unless @options.has_key? :description
   end
 
   def run
@@ -47,12 +49,14 @@ class CommandNewAccount
     element.add_element 'key'
     element.add_element 'currency'
     element.add_element 'balance'
+    element.add_element 'description'
     element.add_element 'children'
     element.elements['id'].text = Account.id_head+1
     element.elements['name'].text = @name
     element.elements['key'].text = path.last
     element.elements['currency'].text = parent.elements['currency'].text
     element.elements['balance'].text = '0.00'
+    element.elements['description'].text = @options[:description]
     accounts.add_element element
     if File.write(Copia.accounts_path, doc)
       puts "copia: New account '#{@name}' created with id #{Account.id_head+1}"
@@ -74,6 +78,10 @@ class CommandNewAccount
       opts.on_tail("-h", "--help", "Display this screen") do
         puts opts
         exit
+      end
+      opts.on("-dDESCRIPTION", "--description=DESCRIPTION",
+          "What is this account for?") do |description|
+        @options[:description] = description
       end
     end
     begin
