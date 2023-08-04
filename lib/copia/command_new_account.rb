@@ -2,8 +2,9 @@ class CommandNewAccount
 
   def initialize
     @options = {}
+    @options[:description] = ''
+    @options[:currency]    = false
     @optparse = parse_options
-    @options[:description] = '' unless @options.has_key? :description
   end
 
   def run
@@ -54,7 +55,11 @@ class CommandNewAccount
     element.elements['id'].text = Account.id_head+1
     element.elements['name'].text = @name
     element.elements['key'].text = path.last
-    element.elements['currency'].text = parent.elements['currency'].text
+    if @options[:currency]
+      element.elements['currency'].text = @options[:currency].id
+    else
+      element.elements['currency'].text = parent.elements['currency'].text
+    end
     element.elements['balance'].text = '0.00'
     element.elements['description'].text = @options[:description]
     accounts.add_element element
@@ -82,6 +87,10 @@ class CommandNewAccount
       opts.on("-dDESCRIPTION", "--description=DESCRIPTION",
           "What is this account for?") do |description|
         @options[:description] = description
+      end
+      opts.on("-cCURRENCY", "--currency=CURRENCY",
+          "Currency for this account") do |currency|
+        @options[:currency] = Currency.find currency
       end
     end
     begin
