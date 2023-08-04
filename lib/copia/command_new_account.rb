@@ -18,11 +18,13 @@ class CommandNewAccount
     end
     doc = Copia.get_doc Copia.accounts_path
     accounts = doc.root.elements['accounts']
+    parent = nil
     path.each_with_index do |key, i|
       found = false
       accounts.each do |account|
         if account.elements['key'].text == key
           found = true
+          parent = account
           accounts = account.elements['children']
         end
       end
@@ -43,10 +45,14 @@ class CommandNewAccount
     element.add_element 'id'
     element.add_element 'name'
     element.add_element 'key'
+    element.add_element 'currency'
+    element.add_element 'balance'
     element.add_element 'children'
     element.elements['id'].text = Account.id_head+1
     element.elements['name'].text = @name
     element.elements['key'].text = path.last
+    element.elements['currency'].text = parent.elements['currency'].text
+    element.elements['balance'].text = '0.00'
     accounts.add_element element
     if File.write(Copia.accounts_path, doc)
       puts "copia: New account '#{@name}' created with id #{Account.id_head+1}"
