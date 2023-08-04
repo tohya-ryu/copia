@@ -41,4 +41,48 @@ class Account
     ar
   end
 
+  def self.find(input)
+    unless /[0-9]+/.match? input
+      input = input.split ':'
+      result = search_key(Copia.accounts, input)
+    else
+      result = search_index(Copia.accounts, input)
+    end
+    result
+  end
+
+  private
+
+  def self.search_index(accounts, input)
+    accounts.each do |acc|
+      return acc if acc.id.to_i == input.to_i
+      unless acc.children.nil?
+        child = search_index(acc.children, input)
+        return child if child
+      end
+    end
+    return nil
+  end
+
+  def self.search_key(accounts, input)
+    out = nil
+    found = false
+    input.each_with_index do |key, i|
+      found = false
+      accounts.each do |account|
+        if account.key == key
+          found = account
+          out = found
+          accounts = account.children
+          accounts = [] if accounts.nil?
+        end
+      end
+    end
+    if out and !found
+      nil
+    else
+      out
+    end
+  end
+
 end
