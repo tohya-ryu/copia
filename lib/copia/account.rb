@@ -4,17 +4,18 @@ class Account
 
   @@id_head = 0
 
-  def initialize(id, key, name, balance, currency)
+  def initialize(id, key, name, description, balance, currency)
     @id       = id.to_i
     @key      = key
     @name     = name
     @balance  = balance
+    @description = description
     @currency = Currency.find(currency)
     @children = nil
   end
 
   def to_s
-    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}]"
+    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}] (#{@description})"
   end
 
   def self.id_head
@@ -30,6 +31,7 @@ class Account
         acc.elements['id'].text,
         acc.elements['key'].text,
         acc.elements['name'].text,
+        acc.elements['description'].text,
         acc.elements['balance'].text,
         acc.elements['currency'].text)
       @@id_head = account.id if account.id > @@id_head
