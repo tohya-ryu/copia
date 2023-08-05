@@ -38,11 +38,9 @@ class Currency
           if currency.code.downcase == ar[0].downcase and
               currency.position.downcase == ar[1].downcase
             return currency
-          else
-            return false
           end
-
         end
+        return false
       else
         Copia.currencies.each do |currency|
           next if currency.nil?
