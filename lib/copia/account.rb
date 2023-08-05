@@ -10,12 +10,20 @@ class Account
     @name     = name
     @balance  = balance
     @description = description
-    @currency = Currency.find(currency)
+    @currency = Currency.find currency
     @children = nil
   end
 
   def to_s
-    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}] (#{@description})"
+    bal = ''
+    if @currency.position == 'left'
+      bal << @currency.symbol
+      bal << @balance
+    else
+      bal << @balance
+      bal << @currency.symbol
+    end
+    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}] #{bal} (#{@description})"
   end
 
   def self.id_head

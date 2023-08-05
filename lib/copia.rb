@@ -22,8 +22,8 @@ class Copia
 
   def main
     setup
-    load_accounts
     load_currencies
+    load_accounts
     case ARGV[0]
     when 'transfer', 't', 'mv'
     when 'new-account', 'na'
