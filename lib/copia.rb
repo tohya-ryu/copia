@@ -7,20 +7,36 @@ require 'time'
 
 class Copia
 
-  VERSION  = '1.0.0'
-  PREF_DIR = '.local/share/copia'
-  ACC_FILE = 'accounts.xml'
-  CURR_FILE = 'currencies.xml'
+  VERSION     = '1.0.0'
+  PREF_DIR    = '.local/share/copia'
+  ACC_FILE    = 'accounts.xml'
+  CURR_FILE   = 'currencies.xml'
+  CONFIG_FILE = 'config.xml'
 
   def initialize
     @@accounts        = []
     @@currencies      = []
     @@pref_path       = File.join(Dir.home, PREF_DIR)
-    @@accounts_path   = File.join(@@pref_path, ACC_FILE)
-    @@currencies_path = File.join(@@pref_path, CURR_FILE)
+    @@config_path     = File.join(@@pref_path, CONFIG_FILE)
+    set_paths @@pref_path
   end
 
   def main
+    # prepare config
+    FileUtils.mkpath @@pref_path unless Dir.exists? @@pref_path
+    unless File.exists? @@config_path
+      path = File.join(__dir__, '../stub', CONFIG_FILE)
+      res = system "cp #{path} #{@@config_path}"
+      unless res
+        puts res
+        exit
+      end
+    end
+    load_config
+    # use pref_path from config to run setup and load data
+    @@pref_path = File.join(Dir.home, @@config.pref_dir)
+    FileUtils.mkpath @@pref_path unless Dir.exists? @@pref_path
+    set_paths @@pref_path
     setup
     load_currencies
     load_accounts
@@ -39,6 +55,10 @@ class Copia
 
   def self.accounts
     @@accounts
+  end
+
+  def self.config
+    @@config
   end
 
   def self.currencies
@@ -61,6 +81,11 @@ class Copia
   end
 
   private
+
+  def set_paths(path)
+    @@accounts_path   = File.join(path, ACC_FILE)
+    @@currencies_path = File.join(path, CURR_FILE)
+  end
 
   def parse_options
     optparse = OptionParser.new do |opts|
@@ -85,7 +110,6 @@ class Copia
 
   # sets up required directories and files if not existing
   def setup
-    FileUtils.mkpath @@pref_path unless Dir.exists? @@pref_path
     unless File.exists? @@accounts_path
       path = File.join(__dir__, '../stub', ACC_FILE)
       res = system "cp #{path} #{@@accounts_path}"
@@ -103,6 +127,11 @@ class Copia
       end
     end
   end
+
+  def load_config
+    doc = Copia.get_doc @@config_path
+    @@config = Config.new doc.root.elements['config']
+  end
   
   def load_accounts
     doc = Copia.get_doc @@accounts_path
@@ -117,9 +146,11 @@ class Copia
 end
 
 require 'copia/account.rb'
+require 'copia/config.rb'
 require 'copia/currency.rb'
 require 'copia/entry.rb'
 require 'copia/transaction.rb'
+require 'copia/command_config.rb'
 require 'copia/command_new_account.rb'
 require 'copia/command_list_accounts.rb'
 require 'copia/command_set_currency.rb'

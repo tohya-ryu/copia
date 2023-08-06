@@ -10,13 +10,16 @@ Gem::Specification.new do |s|
   s.files = [
     "lib/copia.rb",
     "lib/copia/account.rb",
+    "lib/copia/config.rb",
     "lib/copia/currency.rb",
     "lib/copia/entry.rb",
     "lib/copia/transaction.rb",
+    "lib/copia/command_config.rb",
     "lib/copia/command_new_account.rb",
     "lib/copia/command_list_accounts.rb",
     "lib/copia/command_set_currency.rb",
     "stub/accounts.xml",
+    "stub/config.xml",
     "stub/currencies.xml"
   ]
   s.homepage = 'https://www.tohya.net/projects/misc/copia.html'
