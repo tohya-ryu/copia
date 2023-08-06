@@ -1,17 +1,20 @@
 class Account
   attr_accessor :children, :balance, :currency
-  attr_reader   :id, :key, :name
+  attr_reader   :id, :key, :name, :type
 
   @@id_head = 0
 
-  def initialize(id, key, name, description, balance, currency)
+  def initialize(id, key, name, description, balance, currency, type,
+      parent = nil)
     @id       = id.to_i
     @key      = key
     @name     = name
     @balance  = balance
     @description = description
     @currency = Currency.find currency
+    @type     = type
     @children = nil
+    @parent   = parent
   end
 
   def to_s
@@ -23,7 +26,8 @@ class Account
       bal << @balance
       bal << @currency.symbol
     end
-    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}] #{bal} (#{@description})"
+    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}] #{bal} (#{@description})"+
+      " TYPE=#{@type}"
   end
 
   def self.id_head
@@ -32,19 +36,26 @@ class Account
 
   # accepts raw data from rexml for a set of accounts
   # to recursively built data tree
-  def self.load(raw)
+  def self.load(raw, parent = nil)
     ar = []
     raw.each_element do |acc|
+      type = nil
+      if parent
+        type = parent.type
+      else
+        type = acc.elements['type'].text
+      end
       account = Account.new(
         acc.elements['id'].text,
         acc.elements['key'].text,
         acc.elements['name'].text,
         acc.elements['description'].text,
         acc.elements['balance'].text,
-        acc.elements['currency'].text)
+        acc.elements['currency'].text,
+        type, parent)
       @@id_head = account.id if account.id > @@id_head
       if acc.elements['children'].count > 0
-        account.children = Account.load acc.elements['children']
+        account.children = Account.load(acc.elements['children'], account)
       end
       ar.push account
     end
