@@ -3,21 +3,24 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 require 'fileutils'
 require 'rexml/document'
+require 'securerandom'
 require 'time'
 
 class Copia
 
-  VERSION     = '1.0.0'
-  PREF_DIR    = '.local/share/copia'
-  ACC_FILE    = 'accounts.xml'
-  CURR_FILE   = 'currencies.xml'
-  CONFIG_FILE = 'config.xml'
+  VERSION      = '1.0.0'
+  PREF_DIR     = '.local/share/copia'
+  ACC_FILE     = 'accounts.xml'
+  CURR_FILE    = 'currencies.xml'
+  TRANSAC_FILE = 'transactions.xml'
+  CONFIG_FILE  = 'config.xml'
 
   def initialize
-    @@accounts        = []
-    @@currencies      = []
-    @@pref_path       = File.join(Dir.home, PREF_DIR)
-    @@config_path     = File.join(@@pref_path, CONFIG_FILE)
+    @@accounts     = []
+    @@currencies   = []
+    @@transactions = []
+    @@pref_path    = File.join(Dir.home, PREF_DIR)
+    @@config_path  = File.join(@@pref_path, CONFIG_FILE)
     set_paths @@pref_path
   end
 
@@ -32,16 +35,17 @@ class Copia
         exit
       end
     end
-    load_config
+    Copia.load_config
     # use pref_path from config to run setup and load data
     @@pref_path = File.join(Dir.home, @@config.pref_dir)
     FileUtils.mkpath @@pref_path unless Dir.exists? @@pref_path
     set_paths @@pref_path
     setup
-    load_currencies
-    load_accounts
+    Copia.load_currencies
+    Copia.load_accounts
     case ARGV[0]
     when 'transfer', 't', 'mv'
+      CommandTransfer.new.run
     when 'new-account', 'na'
       CommandNewAccount.new.run
     when 'list-accounts', 'la'
@@ -51,6 +55,34 @@ class Copia
     else
       puts parse_options
     end
+  end
+
+  def self.validate_datetime(datetime, default)
+    if datetime
+      pattern =
+        /\A[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\z/
+      unless pattern.match? datetime
+        puts "Invalid format for date time '#{datetime}'"
+        puts "Valid example: 2000-12-31 24:45:55"
+        exit
+      end
+      begin
+        out = Time.parse("#{datetime} #{Time.now.zone}")
+      rescue
+        puts "Invalid format for date time '#{datetime}'"
+        puts "Valid example: 2000-12-31 24:45:55"
+        exit
+      end
+    else
+      out = default
+    end
+    out
+  end
+
+  def self.validate_value(value)
+    pattern1 = /\A[0-9]+.[0-9]{1,2}\z/
+    pattern2 = /\A[0-9]+\z/
+    pattern1.match? value or pattern2.match? value
   end
 
   def self.accounts
@@ -65,12 +97,20 @@ class Copia
     @@currencies
   end
 
+  def self.transactions
+    @@transactions
+  end
+
   def self.accounts_path
     @@accounts_path
   end
 
   def self.currencies_path
     @@currencies_path
+  end
+
+  def self.transactions_path
+    @@transactions_path
   end
 
   def self.get_doc(filename)
@@ -80,11 +120,33 @@ class Copia
     doc
   end
 
+  def self.load_config
+    doc = Copia.get_doc @@config_path
+    @@config = Config.new doc.root.elements['config']
+  end
+  
+  def self.load_accounts
+    doc = Copia.get_doc @@accounts_path
+    @@accounts = Account.load doc.root.elements['accounts']
+  end
+
+  def self.load_currencies
+    doc = Copia.get_doc @@currencies_path
+    @@currencies = Currency.load doc.root.elements['currencies']
+  end
+
+  def self.load_transactions
+    doc = Copia.get_doc @@transactions_path
+    @@transactions = Transaction.load doc.root.elements['transactions']
+  end
+
+
   private
 
   def set_paths(path)
-    @@accounts_path   = File.join(path, ACC_FILE)
-    @@currencies_path = File.join(path, CURR_FILE)
+    @@accounts_path     = File.join(path, ACC_FILE)
+    @@currencies_path   = File.join(path, CURR_FILE)
+    @@transactions_path = File.join(path, TRANSAC_FILE)
   end
 
   def parse_options
@@ -126,21 +188,14 @@ class Copia
         exit
       end
     end
-  end
-
-  def load_config
-    doc = Copia.get_doc @@config_path
-    @@config = Config.new doc.root.elements['config']
-  end
-  
-  def load_accounts
-    doc = Copia.get_doc @@accounts_path
-    @@accounts = Account.load doc.root.elements['accounts']
-  end
-
-  def load_currencies
-    doc = Copia.get_doc @@currencies_path
-    @@currencies = Currency.load doc.root.elements['currencies']
+    unless File.exists? @@transactions_path
+      path = File.join(__dir__, '../stub', TRANSAC_FILE)
+      res = system "cp #{path} #{@@transactions_path}"
+      unless res
+        puts res
+        exit
+      end
+    end
   end
 
 end
@@ -155,3 +210,4 @@ require 'copia/command_config.rb'
 require 'copia/command_new_account.rb'
 require 'copia/command_list_accounts.rb'
 require 'copia/command_set_currency.rb'
+require 'copia/command_transfer.rb'

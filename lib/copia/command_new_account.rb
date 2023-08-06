@@ -9,7 +9,7 @@ class CommandNewAccount
 
   def run
     if ARGV.count != 3
-      @optparse
+      puts @optparse
       exit
     end
     @name = ARGV[1]
