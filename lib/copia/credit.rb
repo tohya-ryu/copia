@@ -12,6 +12,8 @@ class Credit
     value = ''
     if account.type == 'asset'
       value << '-' << @amount
+    else
+      value << @amount
     end
     BigDecimal value
   end

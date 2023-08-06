@@ -12,6 +12,8 @@ class Debit
     value = ''
     if account.type == 'liability'
       value << '-' << @amount
+    else
+      value << @amount
     end
     BigDecimal value
   end
