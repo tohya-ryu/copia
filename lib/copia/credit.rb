@@ -8,4 +8,12 @@ class Credit
     @datetime    = datetime
   end
 
+  def value
+    value = ''
+    if account.type == 'asset'
+      value << '-' << @amount
+    end
+    BigDecimal value
+  end
+
 end

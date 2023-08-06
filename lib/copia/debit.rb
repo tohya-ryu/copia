@@ -8,4 +8,12 @@ class Debit
     @datetime    = datetime
   end
 
+  def value
+    value = ''
+    if account.type == 'liability'
+      value << '-' << @amount
+    end
+    BigDecimal value
+  end
+
 end
