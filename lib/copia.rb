@@ -147,8 +147,9 @@ end
 
 require 'copia/account.rb'
 require 'copia/config.rb'
+require 'copia/credit.rb'
 require 'copia/currency.rb'
-require 'copia/entry.rb'
+require 'copia/debit.rb'
 require 'copia/transaction.rb'
 require 'copia/command_config.rb'
 require 'copia/command_new_account.rb'
