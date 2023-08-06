@@ -73,7 +73,33 @@ class CommandTransfer
     if File.write(Copia.transactions_path, doc)
       puts "copia: New transaction created with id #{transaction.id}"
     end
-    # update balances
+    # update balances (credit)
+    balance = BigDecimal(transaction.credit.account.balance)
+    balance = balance + transaction.credit.value
+    transaction.credit.account.balance = balance.to_digits
+    parent = transaction.credit.account.parent
+    while parent
+      balance = BigDecimal(parent.balance)
+      balance = balance + transaction.credit.value
+      parent.balance = balance.to_digits
+      parent = parent.parent
+    end
+    # update balances (debit)
+    balance = BigDecimal(transaction.debit.account.balance)
+    balance = balance + transaction.debit.value
+    transaction.debit.account.balance = balance.to_digits
+    parent = transaction.debit.account.parent
+    while parent
+      balance = BigDecimal(parent.balance)
+      balance = balance + transaction.debit.value
+      parent.balance = balance.to_digits
+      parent = parent.parent
+    end
+    doc = Copia.get_doc Copia.accounts_path
+    set_balances doc.root.elements['accounts']
+    if File.write(Copia.accounts_path, doc)
+      puts "copia: Balances updated"
+    end
   end
   
   private 
@@ -107,6 +133,16 @@ class CommandTransfer
       exit
     end
     optparse
+  end
+
+  def set_balances(raw_accounts)
+    raw_accounts.each do |racc|
+      acc = Account.find racc.elements['id'].text
+      racc.elements['balance'].text = acc.balance
+      if racc.elements['children'].count > 0
+        set_balances racc.elements['children']
+      end
+    end
   end
 
 end
