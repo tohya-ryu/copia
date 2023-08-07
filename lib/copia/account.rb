@@ -15,6 +15,7 @@ class Account
     @type     = type
     @children = nil
     @parent   = parent
+    @keypath  = get_keypath
   end
 
   def to_s
@@ -73,6 +74,16 @@ class Account
   end
 
   private
+
+  def get_keypath
+    parent = @parent
+    str = @key
+    while !parent.nil?
+      str.prepend "#{parent.key}:"
+      parent = parent.parent
+    end
+    str
+  end
 
   def self.search_index(accounts, input)
     accounts.each do |acc|
