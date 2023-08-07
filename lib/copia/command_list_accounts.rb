@@ -12,14 +12,24 @@ class CommandListAccounts
 
   def print_accounts(accounts, indent, str)
     out = str
+    max_pos_key = 0
     accounts.each do |account|
       str = ""
-      (indent*4).times { |n| str << " " }
+      #(indent*4).times { |n| str << " " }
       str << account.to_s
+      max_pos_key = str.index('[') if str.index('[')> max_pos_key
       out << str << "\n"
       out = print_accounts(account.children, indent+1, out) if account.children
     end
-    out
+    out2 = ""
+    out.each_line do |line|
+      diff = max_pos_key - line.index('[')
+      padding = ""
+      diff.times { |t| padding << " " }
+      line.insert(line.index('['), padding)
+      out2 << line
+    end
+    out2
   end
 
   def parse_options
