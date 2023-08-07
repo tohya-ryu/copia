@@ -5,7 +5,44 @@ class CommandListAccounts
   end
 
   def run
-    puts print_accounts(Copia.accounts, 0, '')
+    text = print_accounts(Copia.accounts, 0, '')
+    max_pos_key = 0
+    max_bal_size = 0
+    text.each_line do |line|
+      max_pos_key = line.index('[') if line.index('[') > max_pos_key
+      bal = line[/](.*?)\(/m, 1]
+      max_bal_size = bal.length if bal.length > max_bal_size
+    end
+    out = ""
+    text.each_line do |line|
+      diff = max_pos_key - line.index('[')
+      padding = ""
+      diff.times { |t| padding << " " }
+      bal = line[/](.*?)\(/m, 1]
+      line.insert(line.index('['), padding)
+      line.gsub!(bal, '')
+      diff = max_bal_size - bal.size
+      padding = ""
+      diff.times { |d| padding << " " }
+      line.insert(line.index('['), bal)
+      line.insert(line.index(/.{1}[0-9]{1,}\./), padding)
+      line.insert(line.index('('), ' ')
+      out << line
+    end
+    max_pos_key = 0
+    text = out
+    text.each_line do |line|
+      max_pos_key = line.index('(') if line.index('(') > max_pos_key
+    end
+    out = ""
+    text.each_line do |line|
+      diff = max_pos_key - line.index('(')
+      padding = ""
+      diff.times { |t| padding << " " }
+      line.insert(line.index('('), padding)
+      out << line
+    end
+    puts out
   end
 
   private
@@ -17,19 +54,10 @@ class CommandListAccounts
       str = ""
       #(indent*4).times { |n| str << " " }
       str << account.to_s
-      max_pos_key = str.index('[') if str.index('[')> max_pos_key
       out << str << "\n"
       out = print_accounts(account.children, indent+1, out) if account.children
     end
-    out2 = ""
-    out.each_line do |line|
-      diff = max_pos_key - line.index('[')
-      padding = ""
-      diff.times { |t| padding << " " }
-      line.insert(line.index('['), padding)
-      out2 << line
-    end
-    out2
+    out
   end
 
   def parse_options
