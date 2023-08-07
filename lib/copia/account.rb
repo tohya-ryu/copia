@@ -27,8 +27,8 @@ class Account
       bal << @balance
       bal << @currency.symbol
     end
-    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@key}] #{bal} (#{@description})"+
-      " TYPE=#{@type}"
+    "<#{@id.to_s.rjust(2, '0')}> #{@name} [#{@keypath}] #{bal} "+
+      "(#{@description}) TYPE=#{@type}"
   end
 
   def self.id_head
@@ -77,7 +77,7 @@ class Account
 
   def get_keypath
     parent = @parent
-    str = @key
+    str = @key.clone
     while !parent.nil?
       str.prepend "#{parent.key}:"
       parent = parent.parent
