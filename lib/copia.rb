@@ -59,18 +59,22 @@ class Copia
 
   def self.validate_datetime(datetime, default)
     if datetime
-      pattern =
-        /\A[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\z/
-      unless pattern.match? datetime
+      str = ""
+      if /\A[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{1,2}:[0-9]{1,2}\z/.
+          match?(datetime)
+        str = "#{datetime}:00 #{Time.now.zone}"
+      elsif /\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/.match?(datetime)
+        str = "#{datetime} 00:00:00 #{Time.now.zone}"
+      else
         puts "Invalid format for date time '#{datetime}'"
-        puts "Valid example: 2000-12-31 24:45:55"
+        puts "Valid examples: '2000-12-31 24:45', '2000-12-31'"
         exit
       end
       begin
-        out = Time.parse("#{datetime} #{Time.now.zone}")
+        out = Time.parse(str)
       rescue
         puts "Invalid format for date time '#{datetime}'"
-        puts "Valid example: 2000-12-31 24:45:55"
+        puts "Valid example: 2000-12-31 24:45"
         exit
       end
     else
