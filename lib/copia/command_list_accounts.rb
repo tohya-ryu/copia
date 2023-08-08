@@ -19,6 +19,18 @@ class CommandListAccounts
       padding = ""
       diff.times { |t| padding << " " }
       bal = line[/](.*?)\(/m, 1]
+      unless /\.00/.match?(bal)
+        account = Account.find(line[1,2])
+        if (account.currency.position == 'left')
+          bal[-1] = '0'
+          bal << ' '
+        else
+          sym = bal[-2]
+          bal[-2] = '0'
+          bal[-1] = sym
+          bal << ' '
+        end
+      end
       line.insert(line.index('['), padding)
       line.gsub!(bal, '')
       diff = max_bal_size - bal.size
