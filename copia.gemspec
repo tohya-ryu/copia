@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'copia'
-  s.version = '1.0.0'
+  s.version = '0.1.0'
   s.executables << 'copia'
   s.date = '2023-07-30'
   s.summary = 'A simple cli accounting tool'

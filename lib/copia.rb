@@ -8,7 +8,7 @@ require 'time'
 
 class Copia
 
-  VERSION      = '1.0.0'
+  VERSION      = '0.1.0'
   PREF_DIR     = '.local/share/copia'
   ACC_FILE     = 'accounts.xml'
   CURR_FILE    = 'currencies.xml'
