@@ -59,7 +59,7 @@ class CommandSetCurrency
           "Set currency for {account}") do |input|
         @options[:account] = Account.find input     
         unless @options[:account]
-          puts "copia: Account #{input} not found"
+          puts "copia: Account '#{input}' not found"
           exit
         end
       end

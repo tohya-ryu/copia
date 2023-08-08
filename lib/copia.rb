@@ -52,6 +52,8 @@ class Copia
       CommandListAccounts.new.run
     when 'set-currency'
       CommandSetCurrency.new.run
+    when 'update-balance'
+      CommandUpdateBalance.new.run
     else
       puts parse_options
     end
@@ -215,3 +217,4 @@ require 'copia/command_new_account.rb'
 require 'copia/command_list_accounts.rb'
 require 'copia/command_set_currency.rb'
 require 'copia/command_transfer.rb'
+require 'copia/command_update_balance.rb'

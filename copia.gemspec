@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
     "lib/copia/command_list_accounts.rb",
     "lib/copia/command_set_currency.rb",
     "lib/copia/command_transfer.rb",
+    "lib/copia/command_update_balance.rb",
     "stub/accounts.xml",
     "stub/config.xml",
     "stub/currencies.xml",
