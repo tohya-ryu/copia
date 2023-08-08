@@ -31,6 +31,31 @@ class Account
       "(#{@description}) TYPE=#{@type}"
   end
 
+  def get_transactions
+    Copia.load_transactions if Copia.transactions.empty?
+    ar = []
+    Copia.transactions.each do |transaction|
+      if (transaction.credit.account.id == self.id or
+          transaction.debit.account.id == self.id)
+        ar.push(transaction)
+      end
+    end
+    ar
+  end
+
+  def get_balance_from_db
+    Copia.load_transactions if Copia.transactions.empty?
+    sum = BigDecimal("0.00")
+    Copia.transactions.each do |transaction|
+      if (transaction.credit.account.id == self.id)
+        sum = sum + transaction.credit.value
+      elsif (transaction.debit.account.id == self.id)
+        sum = sum + transaction.debit.value
+      end
+    end
+    sum.to_digits
+  end
+
   def self.id_head
     @@id_head
   end

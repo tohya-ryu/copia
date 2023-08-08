@@ -13,6 +13,9 @@ class CommandUpdateBalance
       exit
     end
     update_accounts(Copia.accounts)
+    if File.write(Copia.accounts_path, @doc)
+      puts "copia: Balances updated"
+    end
   end
 
   private
@@ -53,8 +56,28 @@ class CommandUpdateBalance
         update_accounts(account.children)
       else
         # fetch balances
+        balance = account.get_balance_from_db
         # update account
+        update_account(@doc.root.elements['accounts'], account, balance)
         # update parents
+        while account.parent
+          pbalance = account.parent.get_balance_from_db
+          sum = BigDecimal("0.00")
+          sum = BigDecimal(balance) + BigDecimal(pbalance)
+          sum = sum.to_digits
+          update_account(@doc.root.elements['accounts'], account.parent, sum)
+          account = account.parent
+        end
+      end
+    end
+  end
+
+  def update_account(raw_accounts, account, balance)
+    raw_accounts.each do |raw|
+      if raw.elements['id'].text.to_i == account.id.to_i
+        raw.elements['balance'].text = balance
+      elsif raw.elements['children'].count > 0
+        update_account(raw.elements['children'], account, balance)
       end
     end
   end
