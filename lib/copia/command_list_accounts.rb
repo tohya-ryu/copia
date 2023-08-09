@@ -1,10 +1,16 @@
 class CommandListAccounts
 
   def initialize
+    @options = {}
+    @options[:account] = nil
     @optparse = parse_options
+    @start = true
   end
 
   def run
+    if @options[:account]
+      @start = false
+    end
     text = print_accounts(Copia.accounts, 0, '')
     max_pos_key = 0
     max_bal_size = 0
@@ -61,14 +67,22 @@ class CommandListAccounts
   private
 
   def print_accounts(accounts, indent, str)
+    flag = false
     out = str
     max_pos_key = 0
     accounts.each do |account|
+      if @start == false && @options[:account].id == account.id
+        @start = true
+        flag   = true
+      end
       str = ""
       #(indent*4).times { |n| str << " " }
-      str << account.to_s
-      out << str << "\n"
+      if @start
+        str << account.to_s
+        out << str << "\n"
+      end
       out = print_accounts(account.children, indent+1, out) if account.children
+      @start = false if @start && !@options[:account].nil? && flag
     end
     out
   end
@@ -79,6 +93,14 @@ class CommandListAccounts
       opts.on_tail("-h", "--help", "Display this screen") do
         puts opts
         exit
+      end
+      opts.on("-aACCOUNT", "--account=ACCOUNT",
+          "Update balances for {account}") do |input|
+        @options[:account] = Account.find(input)
+        unless @options[:account]
+          puts "copia: Account '#{input}' not found"
+          exit
+        end
       end
     end
     begin
