@@ -5,6 +5,7 @@ class CommandUpdateBalance
     @options[:account] = nil
     @optparse = parse_options
     @doc = Copia.get_doc Copia.accounts_path
+    @parent_balances = {}
   end
 
   def run
@@ -61,11 +62,17 @@ class CommandUpdateBalance
         update_account(@doc.root.elements['accounts'], account, balance)
         # update parents
         while account.parent
-          pbalance = account.parent.get_balance_from_db
+          pbalance = nil
+          if @parent_balances.has_key?("#{account.parent.id}")
+            pbalance = @parent_balances["#{account.parent.id}"]
+          else
+            pbalance = account.parent.get_balance_from_db
+          end
           sum = BigDecimal("0.00")
           sum = BigDecimal(balance) + BigDecimal(pbalance)
-          sum = sum.to_digits
-          update_account(@doc.root.elements['accounts'], account.parent, sum)
+          @parent_balances["#{account.parent.id}"] = sum.clone
+          update_account(@doc.root.elements['accounts'], account.parent,
+            sum.to_digits)
           account = account.parent
         end
       end
