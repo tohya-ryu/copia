@@ -19,7 +19,8 @@ class CommandListAccounts
       padding = ""
       diff.times { |t| padding << " " }
       bal = line[/](.*?)\(/m, 1]
-      unless /\.00/.match?(bal)
+      bal_raw = bal.clone
+      unless /\.[0-9]{2}/.match?(bal)
         account = Account.find(line[1,2])
         if (account.currency.position == 'left')
           bal[-1] = '0'
@@ -32,7 +33,7 @@ class CommandListAccounts
         end
       end
       line.insert(line.index('['), padding)
-      line.gsub!(bal, '')
+      line.gsub!(bal_raw, '')
       diff = max_bal_size - bal.size
       padding = ""
       diff.times { |d| padding << " " }
