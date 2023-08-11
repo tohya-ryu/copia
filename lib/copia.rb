@@ -50,6 +50,8 @@ class Copia
       CommandNewAccount.new.run
     when 'list-accounts', 'la'
       CommandListAccounts.new.run
+    when 'list-transactions', 'ls'
+      CommandListTransactions.new.run
     when 'set-currency'
       CommandSetCurrency.new.run
     when 'update-balance'
@@ -215,6 +217,7 @@ require 'copia/transaction.rb'
 require 'copia/command_config.rb'
 require 'copia/command_new_account.rb'
 require 'copia/command_list_accounts.rb'
+require 'copia/command_list_transactions.rb'
 require 'copia/command_set_currency.rb'
 require 'copia/command_transfer.rb'
 require 'copia/command_update_balance.rb'
