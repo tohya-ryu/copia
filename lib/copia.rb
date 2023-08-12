@@ -61,6 +61,11 @@ class Copia
     end
   end
 
+  def self.print_transaction_data(data)
+    "<#{data.transaction.id}> #{data.account.name} [#{data.account.keypath}] "+
+      "#{data.value.to_digits} #{data.datetime} #{data.transaction.comment}"
+  end
+
   def self.validate_datetime(datetime, default)
     if datetime
       str = ""

@@ -1,6 +1,6 @@
 class Account
   attr_accessor :children, :balance, :currency
-  attr_reader   :id, :key, :name, :type, :parent
+  attr_reader   :id, :key, :name, :type, :parent, :keypath
 
   @@id_head = 0
 

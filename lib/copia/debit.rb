@@ -18,4 +18,8 @@ class Debit
     BigDecimal value
   end
 
+  def to_s
+    Copia.print_transaction_data(self)
+  end
+
 end
