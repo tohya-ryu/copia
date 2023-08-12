@@ -23,6 +23,7 @@ class CommandListTransactions
     Copia.load_transactions
     Copia.transactions.each do |transaction|
       if @options[:like]
+        next if transaction.comment.nil?
         unless transaction.comment.downcase.include?(@options[:like].downcase)
           next
         end
