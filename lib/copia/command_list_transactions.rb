@@ -76,7 +76,9 @@ class CommandListTransactions
     max_pos_key = 0
     text = out
     text.each_line do |line|
-      max_pos_key = line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/) if line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/) > max_pos_key
+      if line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/) > max_pos_key
+        max_pos_key = line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
+      end
     end
     out = ""
     text.each_line do |line|
@@ -94,6 +96,15 @@ class CommandListTransactions
       puts "copia: #{cnt} transfers hidden from output list"
     end
     puts out
+    if @options[:sum]
+      sum = BigDecimal("0.00")
+      @data.each do |dat|
+        sum = sum + dat.value
+      end
+      sum = sum.to_digits
+      sum << '0' if /\.{1}[0-9]{1}\z/.match?(sum)
+      puts "copia: Total balance of inspected entries #{sum}"
+    end
   end
 
   private
@@ -125,7 +136,7 @@ class CommandListTransactions
           exit
         end
       end
-      opts.on("-S", "--sum", "Also print sums") do 
+      opts.on("-S", "--sum", "Also print sum") do 
         @options[:sum] = true
       end
       opts.on("-sDATE", "--start-date=DATE",
