@@ -62,8 +62,16 @@ class Copia
   end
 
   def self.print_transaction_data(data)
+    bal = ''
+    if data.account.currency.position == 'left'
+      bal << data.account.currency.symbol
+      bal << data.value.to_digits
+    else
+      bal << data.value.to_digits
+      bal << data.account.currency.symbol
+    end
     "<#{data.transaction.id}> #{data.account.name} [#{data.account.keypath}] "+
-      "#{data.value.to_digits} #{data.datetime} #{data.transaction.comment}"
+      "#{bal} #{data.datetime} #{data.transaction.comment}"
   end
 
   def self.validate_datetime(datetime, default)

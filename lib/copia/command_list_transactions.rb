@@ -15,7 +15,7 @@ class CommandListTransactions
   end
 
   def run
-    out = ""
+    text = ""
     @start_time = Copia.validate_datetime(@options[:startdate],
       Time.parse("1900-01-01 00:00:00 #{Time.now.zone}"))
     @end_time = Copia.validate_datetime(@options[:enddate],
@@ -33,7 +33,56 @@ class CommandListTransactions
     end
     @data.sort_by! { |dat| dat.datetime }
     @data.each do |dat|
-      out << dat.to_s << "\n"
+      text << dat.to_s << "\n"
+    end
+    max_pos_key = 0
+    max_bal_size = 0
+    text.each_line do |line|
+      max_pos_key = line.index('[') if line.index('[') > max_pos_key
+      bal = line[/](.*?)[0-9]{4}-/m, 1]
+      max_bal_size = bal.length if bal.length > max_bal_size
+    end
+    out = ""
+    text.each_line do |line|
+      diff = max_pos_key - line.index('[')
+      padding = ""
+      diff.times { |t| padding << " " }
+      bal = line[/](.*?)[0-9]{4}-/m, 1]
+      bal_raw = bal.clone
+      unless /\.[0-9]{2}/.match?(bal)
+        account = Account.find((line[/\[[a-zA-Z:]+\]/])[1..-2])
+        if (account.currency.position == 'left')
+          bal[-1] = '0'
+          bal << ' '
+        else
+          sym = bal[-2]
+          bal[-2] = '0'
+          bal[-1] = sym
+          bal << ' '
+        end
+      end
+      line.insert(line.index('['), padding)
+      line.gsub!(bal_raw, '')
+      diff = max_bal_size - bal.size
+      padding = ""
+      diff.times { |d| padding << " " }
+      line.insert(line.index('['), bal)
+      line.insert(line.index(/.{1}[0-9]{1,}\./), padding)
+      line.insert(line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/), ' ')
+      out << line
+    end
+    max_pos_key = 0
+    text = out
+    text.each_line do |line|
+      max_pos_key = line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/) if line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/) > max_pos_key
+    end
+    out = ""
+    text.each_line do |line|
+      diff = max_pos_key - line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
+      padding = ""
+      diff.times { |t| padding << " " }
+      line.insert(line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/), padding)
+      out << line
     end
     puts out
   end
@@ -86,7 +135,6 @@ class CommandListTransactions
           "List transactions of requested accounts") do |list|
         unless list.nil?
           list.each do |arg|
-            puts arg
             @options[:accounts].push(Account.find(arg))
             unless @options[:accounts][-1]
               puts "copia: Account '#{arg}' not found"
