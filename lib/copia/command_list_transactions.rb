@@ -144,10 +144,14 @@ class CommandListTransactions
           "List transactions of requested accounts") do |list|
         unless list.nil?
           list.each do |arg|
-            @options[:accounts].push(Account.find(arg))
-            unless @options[:accounts][-1]
+            account = Account.find(arg)
+            if account.nil?
               puts "copia: Account '#{arg}' not found"
               exit
+            end
+            @options[:accounts].push(account)
+            if account.children
+              push_children(account.children)
             end
           end
         end
@@ -162,6 +166,15 @@ class CommandListTransactions
       exit
     end
     optparse
+  end
+
+  def push_children(accounts)
+    accounts.each do |account|
+      @options[:accounts].push(account)
+      if account.children
+        push_children(account.children)
+      end
+    end
   end
 
 end
