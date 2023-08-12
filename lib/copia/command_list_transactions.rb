@@ -32,8 +32,10 @@ class CommandListTransactions
       @data.push(transaction.debit) if validate_data(transaction.debit)
     end
     @data.sort_by! { |dat| dat.datetime }
-    @data.each do |dat|
-      text << dat.to_s << "\n"
+    start = @data.count - @options[:count] - 1
+    start = 0 if start < 0
+    @data.each_with_index do |dat, i|
+      text << dat.to_s << "\n" if i >= start
     end
     max_pos_key = 0
     max_bal_size = 0
@@ -83,6 +85,13 @@ class CommandListTransactions
       diff.times { |t| padding << " " }
       line.insert(line.index(/[0-9]{4}-[0-9]{2}-[0-9]{2}/), padding)
       out << line
+    end
+    cnt = @options[:count]
+    cnt = @data.count if @data.count < @options[:count]
+    puts "copia: listing #{cnt} of #{@data.count} transfers"
+    if start > 0
+      cnt = @data.count - @options[:count]
+      puts "copia: #{cnt} transfers hidden from output list"
     end
     puts out
   end
