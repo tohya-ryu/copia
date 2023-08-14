@@ -69,6 +69,9 @@ class Copia
     else
       bal << data.value.to_digits
       bal << data.account.currency.symbol
+      if data.value.to_s[0] == '-' && bal[0] != '-'
+        bal = "-" + bal
+      end
     end
     "<#{data.transaction.id}> #{data.account.name} [#{data.account.keypath}] "+
       "#{bal} #{data.datetime} #{data.transaction.comment}"

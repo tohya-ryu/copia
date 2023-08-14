@@ -15,7 +15,7 @@ class Credit
     else
       value << @amount
     end
-    BigDecimal value
+    BigDecimal(value)
   end
 
   def to_s
